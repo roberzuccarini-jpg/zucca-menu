@@ -126,14 +126,18 @@ async function loadPublishedMenu(){
   const table=parseCSV(raw);if(table.length<2)throw new Error('La hoja no contiene filas de productos.');
   const heads=table[0].map(norm);
   const col=(...names)=>heads.findIndex(h=>names.some(n=>h===norm(n)));
-  const ix={cat:col('Categoria','Categoría'),name:col('Producto'),desc:col('Descripcion','Descripción'),price:col('Precio'),avail:col('Disponible'),photo:col('Foto','Imagen'),sub:col('Subcategoria','Subcategoría'),featured:col('Destacado')};
+  const ix={cat:col('Categoria','Categoría'),name:col('Producto'),desc:col('Descripcion','Descripción'),price:col('Precio'),avail:col('Disponible'),photo:col('Foto','Imagen'),sub:col('Subcategoria','Subcategoría'),featured:col('Destacado'),order:col('Orden','Order','Posicion','Posición')};
   if(ix.cat<0||ix.name<0||ix.price<0)throw new Error('Faltan columnas requeridas: Categoría, Producto o Precio.');
-  const records=table.slice(1).map(r=>({
-   cat:(r[ix.cat]||'').trim(),name:(r[ix.name]||'').trim(),desc:ix.desc>=0?(r[ix.desc]||'').trim():'',price:parsePrice(r[ix.price]),available:ix.avail>=0?yes(r[ix.avail]):true,photo:((ix.photo>=0?(r[ix.photo]||'').trim():'')||PRODUCT_PHOTOS[norm((r[ix.name]||'').trim())]||''),sub:ix.sub>=0?(r[ix.sub]||'').trim():'',featured:ix.featured>=0?yes(r[ix.featured],false):false
+  const records=table.slice(1).map((r,seq)=>({
+   cat:(r[ix.cat]||'').trim(),name:(r[ix.name]||'').trim(),desc:ix.desc>=0?(r[ix.desc]||'').trim():'',price:parsePrice(r[ix.price]),available:ix.avail>=0?yes(r[ix.avail]):true,photo:((ix.photo>=0?(r[ix.photo]||'').trim():'')||PRODUCT_PHOTOS[norm((r[ix.name]||'').trim())]||''),sub:ix.sub>=0?(r[ix.sub]||'').trim():'',featured:ix.featured>=0?yes(r[ix.featured],false):false,order:ix.order>=0&&String(r[ix.order]||'').trim()!==''?Number(r[ix.order]):NaN,seq
   })).filter(x=>x.cat&&x.name);
   if(!records.length)throw new Error('No se encontraron productos con categoría y nombre.');
   const groups={};
-  records.forEach(x=>{const key=x.cat; if(!groups[key])groups[key]=[];groups[key].push([x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured])});
+  records.forEach(x=>{const key=x.cat; if(!groups[key])groups[key]=[];groups[key].push([x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured,x.order,x.seq])});
+  Object.keys(groups).forEach(cat=>groups[cat].sort((a,b)=>{
+   const ao=Number.isFinite(a[7])?a[7]:a[8],bo=Number.isFinite(b[7])?b[7]:b[8];
+   return ao-bo || a[8]-b[8];
+  }));
   const next=[];
   const featured=records.filter(x=>x.featured).map(x=>[x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured]);
   if(featured.length)next.push({id:'top',title:'Top más pedidos de Zucca',sub:'Los favoritos de nuestros clientes.',items:featured});
