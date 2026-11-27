@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080808"><meta name="description" content="Menú de Zucca: hamburguesas, pizzanesas, sándwiches, pizzas y papas en Colón.">
+<title>Zucca | Menú</title>
+<style>
+:root{--bg:#080808;--panel:#151515;--panel2:#202020;--yellow:#f5d400;--white:#f7f7f7;--muted:#b9b9b9;--line:#343434}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--white);font-family:Inter,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.wrap{max-width:1120px;margin:auto;padding:0 20px}.top{position:sticky;top:0;z-index:10;background:#080808ed;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{font-weight:1000;font-size:30px;letter-spacing:-2px;color:var(--yellow);text-decoration:none}.brand small{display:block;color:#ddd;font-size:9px;letter-spacing:2px;text-align:center}.navlinks{display:flex;gap:18px;flex-wrap:wrap}.navlinks a{color:#eee;text-decoration:none;font-size:13px;font-weight:800}.navlinks a:hover{color:var(--yellow)}.cartbtn,.primary{border:0;border-radius:9px;background:var(--yellow);color:#090909;font-weight:900;padding:12px 16px}.hero{padding:54px 0 42px;display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center}.eyebrow{color:var(--yellow);font-size:12px;font-weight:900;letter-spacing:3px}.hero h1{font-size:clamp(48px,8vw,90px);line-height:.88;letter-spacing:-5px;margin:16px 0}.hero h1 span{color:var(--yellow)}.hero p{color:var(--muted);max-width:460px;line-height:1.6}.hero-art{min-height:300px;border:1px solid #3b3200;border-radius:18px;background:radial-gradient(circle at 50% 45%,#594700 0,#201a00 32%,#111 72%);display:flex;align-items:center;justify-content:center;text-align:center;padding:25px;overflow:hidden}.hero-art strong{font-size:clamp(34px,5vw,60px);line-height:.95;letter-spacing:-3px;text-shadow:0 5px 20px #000}.hero-art strong span{color:var(--yellow)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.secondary{border:1px solid #666;border-radius:9px;color:white;background:transparent;padding:12px 16px;font-weight:800}.chips{display:flex;gap:9px;overflow:auto;padding:18px 0 26px;scrollbar-width:none}.chips a{white-space:nowrap;text-decoration:none;color:#eee;border:1px solid var(--line);border-radius:99px;padding:10px 15px;font-size:13px;font-weight:800}.chips a:hover{border-color:var(--yellow);color:var(--yellow)}.section{padding:18px 0 34px;scroll-margin-top:95px}.section h2{font-size:27px;color:var(--yellow);margin:12px 0 18px;letter-spacing:-.7px}.sub{color:var(--muted);font-size:13px;margin-top:-12px;margin-bottom:18px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.card{background:var(--panel);border:1px solid #242424;border-radius:13px;overflow:hidden;display:flex;flex-direction:column;min-width:0}.photo{aspect-ratio:1.15;background:linear-gradient(135deg,#28220b,#111 65%);display:flex;align-items:center;justify-content:center;color:var(--yellow);font-size:42px;font-weight:1000;letter-spacing:-2px;text-align:center;padding:12px}.photo small{display:block;font-size:10px;letter-spacing:2px;color:#ddd}.photo img{width:100%;height:100%;object-fit:cover;display:block}.syncstatus{font-size:12px;color:#aaa;padding:8px 0}.syncstatus.ok{color:#91d79b}.syncstatus.err{color:#f0c15a}.info{padding:13px;display:flex;flex-direction:column;flex:1}.info h3{margin:0 0 7px;font-size:17px}.desc{color:#bbb;font-size:13px;line-height:1.45;min-height:36px;margin:0 0 12px}.price{color:var(--yellow);font-size:19px;font-weight:900;margin-top:auto}.add{margin-top:12px;border:1px solid #6b5c00;background:#292300;color:var(--yellow);border-radius:8px;padding:9px;font-weight:900}.add:hover{background:var(--yellow);color:#111}.notice{border:1px dashed #665700;color:#d6c76b;padding:12px;border-radius:10px;font-size:12px;margin:12px 0}.footer{border-top:1px solid var(--line);padding:30px 0 50px;color:#aaa;font-size:13px}.footer b{color:var(--yellow)}.modal{position:fixed;inset:0;background:#000b;z-index:30;display:none;justify-content:flex-end}.modal.open{display:flex}.drawer{background:#111;border-left:1px solid var(--line);width:min(440px,100%);height:100%;padding:22px;overflow:auto}.drawerhead{display:flex;justify-content:space-between;align-items:center}.drawer h2{color:var(--yellow)}.close{background:none;border:1px solid #555;color:#fff;border-radius:8px;padding:7px 11px}.cartline{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:13px 0}.qty{display:flex;align-items:center;gap:8px}.qty button{background:#292300;color:var(--yellow);border:1px solid #625500;border-radius:6px;padding:4px 9px}.field{width:100%;background:#1d1d1d;color:white;border:1px solid #444;border-radius:8px;padding:11px;margin:5px 0 12px}.total{display:flex;justify-content:space-between;font-size:21px;font-weight:900;margin:20px 0}.empty{color:#aaa;padding:30px 0}.search{width:100%;background:#161616;border:1px solid #444;border-radius:9px;padding:12px;color:white;margin:5px 0 15px}.adminlink{color:#777;text-decoration:underline;cursor:pointer;background:none;border:0;padding:0}
+@media(max-width:850px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.navlinks{display:none}.hero{grid-template-columns:1fr}.hero-art{min-height:210px}}
+@media(max-width:600px){.wrap{padding:0 15px}.nav{height:65px}.brand{font-size:27px}.hero{padding:38px 0 20px;gap:18px}.hero h1{letter-spacing:-3px}.hero-art{min-height:165px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.info{padding:10px}.info h3{font-size:15px}.desc{font-size:12px;min-height:48px}.price{font-size:17px}.section h2{font-size:23px}.cartbtn{padding:10px 12px}}
+</style></head>
+<body>
+<header class="top"><div class="wrap nav"><a class="brand" href="#inicio">ZUCCA<small>CASA DE COMIDAS</small></a><nav class="navlinks"><a href="#hamburguesas">HAMBURGUESAS</a><a href="#pizzanesas">PIZZANESAS</a><a href="#sandwiches">SÁNDWICHES</a><a href="#pizzas">PIZZAS</a><a href="#papas">PAPAS</a><a href="#bebidas">BEBIDAS</a></nav><button class="cartbtn" id="openCart">MI PEDIDO <span id="cartCount">0</span></button></div></header>
+<main class="wrap" id="inicio">
+<section class="hero"><div><div class="eyebrow">COLÓN · BUENOS AIRES</div><h1>EL ANTOJO<br><span>TIENE NOMBRE.</span></h1><p>Hamburguesas, pizzanesas, sándwiches y mucho más. Elegí tus favoritos y armá tu pedido.</p><div class="actions"><a class="primary" href="#menu" style="text-decoration:none">VER MENÚ ↓</a><button class="secondary" id="heroCart">ARMAR PEDIDO</button></div></div><div class="hero-art"><strong>MUCHO<br><span>SABOR.</span><small>HECHO EN ZUCCA</small></strong></div></section>
+<div id="menu"><input id="search" class="search" placeholder="Buscar hamburguesas, pizzas, papas..."><div id="syncStatus" class="syncstatus">Conectando con el menú de Zucca…</div><div class="chips"><a href="#hamburguesas">Hamburguesas</a><a href="#pizzanesas">Pizzanesas</a><a href="#sandwiches">Sándwiches</a><a href="#pizzas">Pizzas</a><a href="#papas">Papas fritas</a><a href="#milanesas">Milanesas</a><a href="#bebidas">Bebidas</a><a href="#salsas">Salsas</a></div></div>
+<div id="catalog"></div>
+<div class="footer"><b>ZUCCA</b> · CASA DE COMIDAS<br>Colón, Buenos Aires<br><br>Precios sujetos a actualización. Los pedidos se confirman por WhatsApp.<br><br><button class="adminlink" id="adminInfo">Administración del menú</button></div>
+</main>
+<div class="modal" id="cartModal"><aside class="drawer"><div class="drawerhead"><h2>Tu pedido</h2><button class="close" id="closeCart">Cerrar ✕</button></div><div id="cartItems"></div><div id="checkout" style="display:none"><div class="total"><span>Total</span><span id="cartTotal">$0</span></div><label>Nombre</label><input class="field" id="customerName" placeholder="Tu nombre"><label>Dirección / retiro</label><input class="field" id="customerAddress" placeholder="Dirección o retiro por el local"><label>Indicaciones (opcional)</label><textarea class="field" id="customerNotes" rows="2" placeholder="Aclaraciones del pedido"></textarea><button class="primary" id="sendOrder" style="width:100%">ENVIAR PEDIDO POR WHATSAPP</button><p class="notice">El pedido se enviará a WhatsApp para confirmar disponibilidad, entrega y forma de pago.</p></div></aside></div>
+<script>
+let sections=[
+{ id:'hamburguesas',title:'Hamburguesas',sub:'Las clásicas de Zucca y nuestra línea de cheddar fundido.',items:[
+['Clásica Zucca',12000,'La primera de todas. Carne de 100 g.'],['Cheese Zucca',12000,'Carne, queso y salsa.'],['Doble Cheese',14000,'Doble carne y doble cheddar.'],['Doble Zucca',15000,'La doble que no falla. Doble carne de 100 g.'],['Triple Zucca',15500,'Tremenda triple. Tres carnes de 100 g.'],['Big Zucca',17000,'Cuatro carnes, cheddar, jamón, queso y huevo.'],['Cheddar One',12500,'Un medallón de carne y doble cheddar fundido.'],['Cheddar Double',14500,'Doble carne y cheddar fundido.'],['Cheddar Triple',16000,'Triple carne y triple cheddar fundido.']]},
+{ id:'pizzanesas',title:'Pizzanesas',sub:'Todas incluyen fritas. Más de 2 kg de sabor para compartir.',items:[
+['Pizzanesa Combinada',34000,'Elegí dos sabores y armá tu combinación.'],['Pizzanesa Napolitana',33000,'Jamón, mozzarella y tomate.'],['Pizzanesa a Caballo',33000,'Clásica, poderosa y con huevo.'],['Pizzanesa Tres Quesos',34000,'Mozzarella, roquefort y parmesano.'],['Pizzanesa de Roquefort',33000,'Para quienes buscan sabor con carácter.'],['Pizzanesa con Salsa Cheddar',33000,'Una bomba de sabor con salsa cheddar.'],['Pizzanesa de Rúcula y Parmesano',33000,'Una combinación fresca y sabrosa.'],['Pizzanesa de Tomate y Huevo',34000,'Tomate y huevo.'],['Pizzanesa Especial',34000,'Una combinación única de Zucca.'],['Pizzanesa de Choclo',33000,'Dulce y diferente.'],['Pizzanesa de Papas Cheddar',null,'Papas fritas y salsa cheddar. Precio pendiente de confirmar.'],['Pizzanesa Roquefort y Cebolla Caramelizada',null,'Roquefort y cebolla caramelizada. Precio pendiente de confirmar.'],['Pizzanesa de Mozzarella',33000,'Simple, pero súper potente.'],['Media Pizzanesa',26000,'La mitad de cualquiera de nuestras variedades.']]},
+{ id:'sandwiches',title:'Sándwiches',sub:'',items:[
+['Juanacho',15000,'Doble de jamón y bien cargado.'],['Sándwich de Ternera',20000,'Ternera en tiritas, cebolla caramelizada, mozzarella y rúcula.'],['Sándwich de Milanesa',20000,'El clásico que nunca falla. Jamón, tomate y queso.'],['Sándwich Napolitano',21000,'Milanesa de ternera, jamón y mozzarella.'],['Sándwich de Tres Quesos',23000,'Mozzarella, parmesano y roquefort.'],['Sándwich de Mila Cheddar',21000,'Milanesa de ternera, mozzarella y cheddar.'],['Sándwich de Lomo Clásico',22000,'Lomo de verdad, con vegetales y acompañamiento.'],['Sándwich de Lomo al Roquefort',24000,'Lomo de verdad con salsa roquefort.']]},
+{ id:'pizzas',title:'Pizzas',sub:'',items:[
+['Pizza Mozzarella',15000,'Salsa de tomate, mozzarella y aceitunas.'],['Pizza Doble de Mozzarella',19000,'Doble de mozzarella y aceitunas.'],['Pizza Napolitana',17000,'Salsa de tomate, mozzarella y tomate.'],['Pizza de Choclo',17000,'Precio registrado en Fudo. Descripción pendiente.'],['Pizza de Huevo',17000,'Precio registrado en Fudo.'],['Pizza Especial con Morrón',19000,'Mozzarella, jamón y morrón.'],['Pizza de Roquefort',18000,'Mozzarella, queso azul y aceitunas.'],['Pizza Especial con Roquefort',21000,'Mozzarella, roquefort y jamón.'],['Pizza 3 Quesos',20000,'Mozzarella, roquefort y parmesano.'],['Pizza Papas Fritas y Cheddar',18000,'Papas fritas y mucho cheddar.'],['Pizza Especial con Jamón',18000,'Precio registrado en Fudo. Descripción pendiente.'],['Pizza Mozzarella y Papas Fritas',17000,'Mozzarella, papas fritas y aceitunas.'],['Pizza de Rúcula y Parmesano',18000,'Mozzarella, rúcula, parmesano y aceitunas.'],['Pizza Especial con Morrón y Huevo',21000,'Mozzarella, jamón, morrón y huevo duro.'],['Pizza Tomate y Huevo',17000,'Mozzarella, tomate y huevo.'],['Pizza Tomate y Roquefort',20000,'Tomate y roquefort.'],['Pizza Cebolla Caramelizada',18000,'Cebolla caramelizada.'],['Pizza Ternera Caramelizada',21000,'Carne de ternera seleccionada y cebolla caramelizada.'],['Pizza Ternera con Salsa Cheddar',20000,'Ternera salteada y abundante salsa cheddar.']]},
+{ id:'papas',title:'Papas fritas',sub:'',items:[['Papas fritas (Chica)',10000,'Porción para compartir.'],['Papas fritas (Mediana)',13000,'Porción regular.'],['Papas fritas (Grande)',17000,'Caja grande llena de papas fritas.'],['Papas Cheddar (Chica)',12000,'Papas fritas con salsa cheddar.'],['Papas Cheddar (Mediana)',15000,'Porción de papas fritas con salsa cheddar.'],['Papas Cheddar (Grande)',20000,'Caja grande de papas fritas con cheddar.']]},
+{ id:'milanesas',title:'Milanesas',sub:'',items:[['Milanesa de Carne',19000,'Milanesa de carne.'],['Milanesa Napolitana',23000,'Milanesa con jamón, mozzarella y tomate.'],['Milanesa a Caballo',23000,'Milanesa de carne con jamón, queso y huevo frito.'],['Milanesa con Salsa Cheddar',23000,'Milanesa con salsa cheddar.'],['Milanesa Tres Quesos',24000,'Milanesa con tres quesos.'],['Milanesa de Roquefort',23000,'Milanesa de ternera con jamón, salsa y queso roquefort.'],['Milanesa Especial',23000,'Carne de ternera, jamón, salsa, mozzarella y morrón.'],['Milanesa de Rúcula y Parmesano',23000,'Milanesa de ternera con jamón, salsa, queso, rúcula y parmesano.']]},
+{ id:'salsas',title:'Salsas',sub:'',items:[['Dip Salsa Cheddar',1500,'Ideal para acompañar tus papas.'],['Dip Salsa Barbacoa',1500,'El compañero ideal para tus papas.'],['Dip Salsa Zucca',1500,'Cremosa, ahumada y ligeramente dulce.']]}
+];
+let cart=[];const money=n=>'$'+Number(n).toLocaleString('es-AR');const catalog=document.getElementById('catalog');
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderSections(filter=''){
+ catalog.innerHTML='';
+ sections.forEach(s=>{
+  let items=s.items.filter(x=>(x[0]+' '+x[2]+' '+(x[5]||'')).toLowerCase().includes(filter.toLowerCase()));
+  if(!items.length)return;
+  let sec=document.createElement('section');sec.className='section';sec.id=s.id;
+  sec.innerHTML=`<h2>${esc(s.title)}</h2>${s.sub?`<p class="sub">${esc(s.sub)}</p>`:''}<div class="grid"></div>`;
+  let grid=sec.querySelector('.grid');
+  items.forEach(p=>{
+   let card=document.createElement('article');card.className='card';
+   let fallback=s.id==='hamburguesas'?'ZUCCA':s.id==='pizzanesas'?'PIZZANESA':s.id==='pizzas'?'PIZZA':s.id==='sandwiches'?'SÁNDWICH':s.id==='papas'?'PAPAS':s.id==='milanesas'?'MILA':s.id==='bebidas'?'BEBIDAS':'ZUCCA';
+   let photo=p[3] && /^https?:\/\//i.test(p[3]) ? `<img src="${esc(p[3])}" alt="${esc(p[0])}" loading="lazy">` : `<div>${fallback}<small>CASA DE COMIDAS</small></div>`;
+   let available=p[4]!==false;
+   card.innerHTML=`<div class="photo">${photo}</div><div class="info">${p[5]?`<div style="color:#c9b400;font-size:10px;font-weight:800;margin-bottom:5px">${esc(p[5])}</div>`:''}<h3>${esc(p[0])}</h3><p class="desc">${esc(p[2]||'')}</p><div class="price">${p[1]===null?'Consultar precio':money(p[1])}</div><button class="add" ${(p[1]===null||!available)?'disabled':''}>${!available?'AGOTADO':p[1]===null?'PRECIO A CONFIRMAR':'AGREGAR +'}</button></div>`;
+   if(!available)card.querySelector('.add').style.opacity='.5';
+   if(p[1]!==null && available)card.querySelector('button').addEventListener('click',()=>add(p));
+   grid.appendChild(card);
+  });
+  catalog.appendChild(sec);
+ });
+}
+function parseCSV(text){
+ const out=[];let row=[],cell='',quoted=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i];
+  if(quoted){if(c==='"'&&text[i+1]==='"'){cell+='"';i++}else if(c==='"'){quoted=false}else cell+=c}
+  else if(c==='"')quoted=true;
+  else if(c===','){row.push(cell);cell=''}
+  else if(c==='\n'){row.push(cell);out.push(row);row=[];cell=''}
+  else if(c!=='\r')cell+=c;
+ }
+ if(cell.length||row.length){row.push(cell);out.push(row)}
+ return out.filter(r=>r.some(x=>String(x).trim()!==''));
+}
+function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase()}
+function parsePrice(v){
+ let t=String(v??'').trim();if(!t)return null;
+ t=t.replace(/[^0-9,.-]/g,'');
+ if(t.includes(',')&&t.includes('.'))t=t.replace(/\./g,'').replace(',','.');
+ else if(t.includes(','))t=t.replace(',','.');
+ const n=Number(t);return Number.isFinite(n)?Math.round(n):null;
+}
+function yes(v,defaultValue=true){const n=norm(v);if(['no','0','false','agotado','inactivo'].includes(n))return false;if(['si','sí','1','true','disponible'].includes(n))return true;return defaultValue}
+const SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vScgBEBfSu1QdDYVcuK2BZ_6TJZGP0QTlQ-w8wDCcvTDloSGfKuFfZL-qDV4Ria-wx348-Vhce417ko/pub?gid=100345527&single=true&output=csv';
+const categoryOrder=['Top más pedidos de Zucca','Hamburguesas','Pizzanesas','Sandwiches','Pizzas','Papas Fritas','Milanesas','Bebidas','Salsas'];
+const categoryIds={'Hamburguesas':'hamburguesas','Pizzanesas':'pizzanesas','Sandwiches':'sandwiches','Sándwiches':'sandwiches','Pizzas':'pizzas','Papas Fritas':'papas','Papas':'papas','Milanesas':'milanesas','Bebidas':'bebidas','Salsas':'salsas'};
+async function loadPublishedMenu(){
+ const status=document.getElementById('syncStatus');
+ try{
+  const response=await fetch(SHEET_CSV_URL,{cache:'no-store'});
+  if(!response.ok)throw new Error('Google Sheets respondió '+response.status);
+  const raw=await response.text();
+  if(!raw.trim()||raw.trim().startsWith('<'))throw new Error('La dirección no devolvió un CSV público.');
+  const table=parseCSV(raw);if(table.length<2)throw new Error('La hoja no contiene filas de productos.');
+  const heads=table[0].map(norm);
+  const col=(...names)=>heads.findIndex(h=>names.some(n=>h===norm(n)));
+  const ix={cat:col('Categoria','Categoría'),name:col('Producto'),desc:col('Descripcion','Descripción'),price:col('Precio'),avail:col('Disponible'),photo:col('Foto','Imagen'),sub:col('Subcategoria','Subcategoría'),featured:col('Destacado')};
+  if(ix.cat<0||ix.name<0||ix.price<0)throw new Error('Faltan columnas requeridas: Categoría, Producto o Precio.');
+  const records=table.slice(1).map(r=>({
+   cat:(r[ix.cat]||'').trim(),name:(r[ix.name]||'').trim(),desc:ix.desc>=0?(r[ix.desc]||'').trim():'',price:parsePrice(r[ix.price]),available:ix.avail>=0?yes(r[ix.avail]):true,photo:ix.photo>=0?(r[ix.photo]||'').trim():'',sub:ix.sub>=0?(r[ix.sub]||'').trim():'',featured:ix.featured>=0?yes(r[ix.featured],false):false
+  })).filter(x=>x.cat&&x.name);
+  if(!records.length)throw new Error('No se encontraron productos con categoría y nombre.');
+  const groups={};
+  records.forEach(x=>{const key=x.cat; if(!groups[key])groups[key]=[];groups[key].push([x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured])});
+  const next=[];
+  const featured=records.filter(x=>x.featured).map(x=>[x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured]);
+  if(featured.length)next.push({id:'top',title:'Top más pedidos de Zucca',sub:'Los favoritos de nuestros clientes.',items:featured});
+  const ordered=Object.keys(groups).sort((a,b)=>{
+   const aa=categoryOrder.indexOf(a),bb=categoryOrder.indexOf(b);
+   return (aa<0?99:aa)-(bb<0?99:bb);
+  });
+  ordered.forEach(cat=>next.push({id:categoryIds[cat]||('cat-'+norm(cat).replace(/[^a-z0-9]+/g,'-')),title:cat,sub:'',items:groups[cat]}));
+  sections=next;renderSections(document.getElementById('search').value);
+  status.textContent=`Menú actualizado desde Google Sheets · ${records.length} productos`;
+  status.className='syncstatus ok';
+ }catch(error){
+  status.textContent='No se pudo sincronizar el menú publicado. Se muestra la vista de prueba. Detalle: '+error.message;
+  status.className='syncstatus err';
+  console.error('Error al leer Google Sheets:',error);
+ }
+}
+function add(p){let i=cart.find(x=>x.name===p[0]);if(i)i.qty++;else cart.push({name:p[0],price:p[1],qty:1});renderCart();document.getElementById('cartModal').classList.add('open')}
+function renderCart(){document.getElementById('cartCount').textContent=cart.reduce((a,x)=>a+x.qty,0);let el=document.getElementById('cartItems');let checkout=document.getElementById('checkout');if(!cart.length){el.innerHTML='<div class="empty">Todavía no agregaste productos.</div>';checkout.style.display='none';return}checkout.style.display='block';el.innerHTML='';cart.forEach((x,i)=>{let row=document.createElement('div');row.className='cartline';row.innerHTML=`<div><b>${x.name}</b><div style="color:#aaa;font-size:12px">${money(x.price)} c/u</div></div><div class="qty"><button data-d="-">−</button><b>${x.qty}</b><button data-d="+">+</button></div>`;row.querySelectorAll('button').forEach(b=>b.onclick=()=>{x.qty+=b.dataset.d==='+'?1:-1;if(x.qty<=0)cart.splice(i,1);renderCart()});el.appendChild(row)});let total=cart.reduce((a,x)=>a+x.price*x.qty,0);document.getElementById('cartTotal').textContent=money(total)}
+function openCart(){document.getElementById('cartModal').classList.add('open')}document.getElementById('openCart').onclick=openCart;document.getElementById('heroCart').onclick=openCart;document.getElementById('closeCart').onclick=()=>document.getElementById('cartModal').classList.remove('open');document.getElementById('cartModal').onclick=e=>{if(e.target.id==='cartModal')e.currentTarget.classList.remove('open')};document.getElementById('search').addEventListener('input',e=>renderSections(e.target.value));
+document.getElementById('sendOrder').onclick=()=>{const phone=(localStorage.getItem('zucca_whatsapp')||'5492473457475').replace(/\D/g,'');let name=document.getElementById('customerName').value.trim(),address=document.getElementById('customerAddress').value.trim(),notes=document.getElementById('customerNotes').value.trim();if(!name||!address){alert('Completá tu nombre y dirección o retiro.');return}let total=cart.reduce((a,x)=>a+x.price*x.qty,0);let msg='Hola Zucca! Quiero hacer este pedido:%0A%0A'+cart.map(x=>x.qty+' x '+x.name+' — '+money(x.price*x.qty)).join('%0A')+'%0A%0ATotal: '+money(total)+'%0A%0ANombre: '+name+'%0AEntrega: '+address+(notes?'%0AIndicaciones: '+notes:'');window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(decodeURIComponent(msg)),'_blank')};
+document.getElementById('adminInfo').onclick=()=>alert('La edición se realiza en la planilla privada de Google Sheets. Los cambios se reflejarán en el menú público cuando Google actualice la publicación.');renderSections();renderCart();loadPublishedMenu();
+</script></body></html>
