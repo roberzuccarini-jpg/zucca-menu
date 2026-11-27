@@ -116,8 +116,10 @@ const categoryIds={'Hamburguesas':'hamburguesas','Pizzanesas':'pizzanesas','Sand
 async function loadPublishedMenu(){
  const status=document.getElementById('syncStatus');
  try{
-  const freshUrl=SHEET_CSV_URL+(SHEET_CSV_URL.includes('?')?'&':'?')+'_zucca_refresh='+Date.now();
-  const response=await fetch(freshUrl,{cache:'no-store',headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}});
+  // Evita cache del navegador y evita encabezados personalizados que pueden
+  // provocar una solicitud CORS previa innecesaria al CSV público.
+  const freshUrl=SHEET_CSV_URL+(SHEET_CSV_URL.includes('?')?'&':'?')+'_zucca_refresh='+Date.now()+'_'+Math.random().toString(36).slice(2);
+  const response=await fetch(freshUrl,{method:'GET',mode:'cors',cache:'no-store',credentials:'omit'});
   if(!response.ok)throw new Error('Google Sheets respondió '+response.status);
   const raw=await response.text();
   if(!raw.trim()||raw.trim().startsWith('<'))throw new Error('La dirección no devolvió un CSV público.');
@@ -143,10 +145,12 @@ async function loadPublishedMenu(){
   sections=next;renderSections(document.getElementById('search').value);
   status.textContent=`Menú actualizado desde Google Sheets · ${records.length} productos`;
   status.className='syncstatus ok';
+  return records.length;
  }catch(error){
-  status.textContent='No se pudo sincronizar el menú publicado. Se muestra la vista de prueba. Detalle: '+error.message;
+  status.textContent='No se pudo actualizar el menú. Detalle: '+error.message;
   status.className='syncstatus err';
   console.error('Error al leer Google Sheets:',error);
+  return 0;
  }
 }
 let pendingComboProduct=null;
@@ -232,6 +236,22 @@ document.querySelectorAll('input[name="paymentMode"]').forEach(r=>r.addEventList
 document.getElementById('sendOrder').onclick=()=>{const phone=(localStorage.getItem('zucca_whatsapp')||'5492473457475').replace(/\D/g,'');let name=document.getElementById('customerName').value.trim(),address=document.getElementById('customerAddress').value.trim(),notes=document.getElementById('customerNotes').value.trim(),mode=deliveryMode(),payment=paymentMode();if(!name){alert('Completá tu nombre.');return}if(mode==='envio'&&!address){alert('Completá la dirección de entrega.');return}let subtotal=cart.reduce((a,x)=>a+x.price*x.qty,0),fee=mode==='envio'?DELIVERY_FEE:0,total=subtotal+fee;let paymentText='Forma de pago: Transferencia (solicito los datos para transferir)';if(payment==='efectivo'){const raw=document.getElementById('cashAmount').value;const paid=Number(raw);if(!raw||!Number.isFinite(paid)||paid<=0){alert('Indicá con cuánto vas a pagar en efectivo.');return}if(paid<total){alert('El importe indicado es menor que el total del pedido.');return}paymentText='Forma de pago: Efectivo\nPaga con: '+money(paid)+'\nVuelto: '+money(paid-total)}let msg='Hola Zucca! Quiero hacer este pedido:\n\n'+cart.map(x=>x.qty+' x '+x.name+' — '+money(x.price*x.qty)+(x.modifiers?.length?'\n   Mitad 1: '+x.modifiers[0]+'\n   Mitad 2: '+x.modifiers[1]:'' )).join('\n')+'\n\nSubtotal: '+money(subtotal)+'\n'+(mode==='envio'?'Envío a domicilio: '+money(fee)+'\n':'Retiro en el local: sin costo\n')+'TOTAL: '+money(total)+'\n\nNombre: '+name+'\nModalidad: '+(mode==='envio'?'Envío a domicilio':'Retiro en el local')+(mode==='envio'?'\nDirección: '+address:'')+'\n'+paymentText+(notes?'\nIndicaciones: '+notes:'');window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank')};
 document.getElementById('adminInfo').onclick=()=>alert('Editá los productos en Google Sheets y luego tocá ACTUALIZAR MENÚ. Google puede tardar unos minutos en publicar algunos cambios.');renderSections();renderCart();updatePaymentUI();
 const refreshButton=document.getElementById('refreshMenu');
-refreshButton.addEventListener('click',async()=>{refreshButton.disabled=true;refreshButton.textContent='ACTUALIZANDO…';await loadPublishedMenu();refreshButton.disabled=false;refreshButton.textContent='ACTUALIZAR MENÚ ↻'});
+refreshButton.addEventListener('click',async()=>{
+ refreshButton.disabled=true;
+ refreshButton.textContent='CONSULTANDO…';
+ const status=document.getElementById('syncStatus');
+ status.textContent='Consultando los últimos cambios de Google Sheets…';
+ status.className='syncstatus';
+ try{
+  const count=await loadPublishedMenu();
+  if(count){
+   const time=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+   status.textContent=`Menú actualizado desde Google Sheets · ${count} productos · ${time}`;
+  }
+ }finally{
+  refreshButton.disabled=false;
+  refreshButton.textContent='ACTUALIZAR MENÚ ↻';
+ }
+});
 loadPublishedMenu();
 </script></body></html>
