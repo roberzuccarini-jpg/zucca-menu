@@ -101,6 +101,33 @@
 @media(prefers-reduced-motion:reduce){.chips a{transition:none}}
 </style>
 
+<style id="zucca-subcategories">
+/* Subcategorías del catálogo: líneas internas claras, con jerarquía visual discreta */
+.subcategory-group{margin:4px 0 30px;}
+.subcategory-heading{
+  display:flex;align-items:center;gap:11px;
+  margin:18px 0 14px;padding:0 2px;
+  color:#f5d400;font-size:clamp(15px,1.65vw,19px);
+  line-height:1.2;font-weight:950;letter-spacing:.055em;
+  text-transform:uppercase;
+}
+.subcategory-heading::before{
+  content:"";display:block;flex:0 0 25px;height:4px;
+  border-radius:4px;background:#f5d400;
+  box-shadow:0 0 12px rgba(245,212,0,.2);
+  transform:skewX(-25deg);
+}
+.subcategory-heading::after{
+  content:"";height:1px;flex:1;
+  background:linear-gradient(90deg,rgba(245,212,0,.42),rgba(245,212,0,0));
+}
+.subcategory-group .grid{margin-top:0;}
+@media(max-width:600px){
+  .subcategory-group{margin:0 0 24px;}
+  .subcategory-heading{gap:8px;margin:14px 0 11px;font-size:14px;letter-spacing:.045em;}
+  .subcategory-heading::before{flex-basis:18px;height:3px;}
+}
+</style>
 </head>
 <body>
 <header class="top"><div class="wrap nav"><a class="brand" href="#inicio">ZUCCA<small>CASA DE COMIDAS</small></a><nav class="navlinks"><a href="#hamburguesas">HAMBURGUESAS</a><a href="#pizzanesas">PIZZANESAS</a><a href="#sandwiches">SÁNDWICHES</a><a href="#pizzas">PIZZAS</a><a href="#papas">PAPAS</a><a href="#bebidas">BEBIDAS</a></nav><button class="cartbtn" id="openCart">MI PEDIDO <span id="cartCount">0</span></button></div></header>
@@ -142,24 +169,59 @@ let sections=[
 ];
 let cart=[];const money=n=>'$'+new Intl.NumberFormat('es-AR',{maximumFractionDigits:0}).format(Number(n));const catalog=document.getElementById('catalog');
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderProductCard(s,p,showSubLabel=false){
+ let card=document.createElement('article');card.className='card';
+ let fallback=s.id==='hamburguesas'?'ZUCCA':s.id==='pizzanesas'?'PIZZANESA':s.id==='pizzas'?'PIZZA':s.id==='sandwiches'?'SÁNDWICH':s.id==='papas'?'PAPAS':s.id==='milanesas'?'MILA':s.id==='bebidas'?'BEBIDAS':'ZUCCA';
+ let photo=p[3] && (/^https?:\/\//i.test(p[3]) || /^data:image\/(jpeg|png|webp);base64,/i.test(p[3])) ? `<img src="${esc(p[3])}" alt="${esc(p[0])}" loading="lazy">` : `<div>${fallback}<small>CASA DE COMIDAS</small></div>`;
+ let available=p[4]!==false;
+ card.innerHTML=`<div class="photo">${photo}</div><div class="info">${showSubLabel&&p[5]?`<div style="color:#c9b400;font-size:10px;font-weight:800;margin-bottom:5px">${esc(p[5])}</div>`:''}<h3>${esc(p[0])}</h3><p class="desc">${esc(p[2]||'')}</p><div class="price">${p[1]===null?'Consultar precio':money(p[1])}</div><button class="add" ${(p[1]===null||!available)?'disabled':''}>${!available?'AGOTADO':p[1]===null?'PRECIO A CONFIRMAR':'AGREGAR +'}</button></div>`;
+ if(!available)card.querySelector('.add').style.opacity='.5';
+ if(p[1]!==null && available)card.querySelector('button').addEventListener('click',()=>add(p));
+ return card;
+}
 function renderSections(filter=''){
  catalog.innerHTML='';
+ const preferredSubcategories={
+  hamburguesas:['Línea Salsa Cheddar','Línea Cheddar Fundido'],
+  papas:['Clásicas','Cheddar']
+ };
  sections.forEach(s=>{
   let items=s.items.filter(x=>(x[0]+' '+x[2]+' '+(x[5]||'')).toLowerCase().includes(filter.toLowerCase()));
   if(!items.length)return;
   let sec=document.createElement('section');sec.className='section';sec.id=s.id;
-  sec.innerHTML=`<h2>${esc(s.title)}</h2>${s.sub?`<p class="sub">${esc(s.sub)}</p>`:''}<div class="grid"></div>`;
-  let grid=sec.querySelector('.grid');
-  items.forEach(p=>{
-   let card=document.createElement('article');card.className='card';
-   let fallback=s.id==='hamburguesas'?'ZUCCA':s.id==='pizzanesas'?'PIZZANESA':s.id==='pizzas'?'PIZZA':s.id==='sandwiches'?'SÁNDWICH':s.id==='papas'?'PAPAS':s.id==='milanesas'?'MILA':s.id==='bebidas'?'BEBIDAS':'ZUCCA';
-   let photo=p[3] && (/^https?:\/\//i.test(p[3]) || /^data:image\/(jpeg|png|webp);base64,/i.test(p[3])) ? `<img src="${esc(p[3])}" alt="${esc(p[0])}" loading="lazy">` : `<div>${fallback}<small>CASA DE COMIDAS</small></div>`;
-   let available=p[4]!==false;
-   card.innerHTML=`<div class="photo">${photo}</div><div class="info">${p[5]?`<div style="color:#c9b400;font-size:10px;font-weight:800;margin-bottom:5px">${esc(p[5])}</div>`:''}<h3>${esc(p[0])}</h3><p class="desc">${esc(p[2]||'')}</p><div class="price">${p[1]===null?'Consultar precio':money(p[1])}</div><button class="add" ${(p[1]===null||!available)?'disabled':''}>${!available?'AGOTADO':p[1]===null?'PRECIO A CONFIRMAR':'AGREGAR +'}</button></div>`;
-   if(!available)card.querySelector('.add').style.opacity='.5';
-   if(p[1]!==null && available)card.querySelector('button').addEventListener('click',()=>add(p));
-   grid.appendChild(card);
-  });
+  sec.innerHTML=`<h2>${esc(s.title)}</h2>${s.sub?`<p class="sub">${esc(s.sub)}</p>`:''}<div class="section-content"></div>`;
+  const content=sec.querySelector('.section-content');
+  // La sección de destacados sigue siendo una sola grilla; las subcategorías se aplican a las categorías normales.
+  if(s.id==='top'){
+   const grid=document.createElement('div');grid.className='grid';
+   items.forEach(p=>grid.appendChild(renderProductCard(s,p,true)));
+   content.appendChild(grid);
+  }else{
+   const groups=new Map();
+   items.forEach(p=>{
+    const label=String(p[5]||'').trim();
+    const key=label||'__sin_subcategoria__';
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(p);
+   });
+   const preferred=preferredSubcategories[s.id]||[];
+   const keys=[...groups.keys()].sort((a,b)=>{
+    if(a==='__sin_subcategoria__')return 1;
+    if(b==='__sin_subcategoria__')return -1;
+    const ai=preferred.findIndex(x=>norm(x)===norm(a));
+    const bi=preferred.findIndex(x=>norm(x)===norm(b));
+    if(ai!==-1||bi!==-1)return (ai===-1?999:ai)-(bi===-1?999:bi);
+    return 0; // conserva el orden de aparición para subcategorías nuevas
+   });
+   keys.forEach(key=>{
+    const label=key==='__sin_subcategoria__'?'':key;
+    const block=document.createElement('div');block.className='subcategory-group';
+    if(label){const heading=document.createElement('h3');heading.className='subcategory-heading';heading.textContent=label;block.appendChild(heading);}
+    const grid=document.createElement('div');grid.className='grid';
+    groups.get(key).forEach(p=>grid.appendChild(renderProductCard(s,p,false)));
+    block.appendChild(grid);content.appendChild(block);
+   });
+  }
   catalog.appendChild(sec);
  });
 }
@@ -211,16 +273,30 @@ async function loadPublishedMenu(){
   const table=parseCSV(raw);if(table.length<2)throw new Error('La hoja no contiene filas de productos.');
   const heads=table[0].map(norm);
   const col=(...names)=>heads.findIndex(h=>names.some(n=>h===norm(n)));
-  const ix={cat:col('Categoria','Categoría'),name:col('Producto'),desc:col('Descripcion','Descripción'),price:col('Precio'),avail:col('Disponible'),photo:col('Foto','Imagen'),sub:col('Subcategoria','Subcategoría'),featured:col('Destacado')};
+  const ix={cat:col('Categoria','Categoría'),name:col('Producto'),desc:col('Descripcion','Descripción'),price:col('Precio'),avail:col('Disponible'),photo:col('Foto','Imagen'),sub:col('Subcategoria','Subcategoría'),featured:col('Destacado'),order:col('Orden')};
   if(ix.cat<0||ix.name<0||ix.price<0)throw new Error('Faltan columnas requeridas: Categoría, Producto o Precio.');
-  const records=table.slice(1).map(r=>({
-   cat:(r[ix.cat]||'').trim(),name:(r[ix.name]||'').trim(),desc:ix.desc>=0?(r[ix.desc]||'').trim():'',price:parsePrice(r[ix.price]),available:ix.avail>=0?yes(r[ix.avail]):true,photo:((ix.photo>=0?(r[ix.photo]||'').trim():'')||PRODUCT_PHOTOS[norm((r[ix.name]||'').trim())]||''),sub:ix.sub>=0?(r[ix.sub]||'').trim():'',featured:ix.featured>=0?yes(r[ix.featured],false):false
+  const inferSubcategory=(category,name)=>{
+   const c=norm(category),n=norm(name);
+   if(c==='hamburguesas'){
+    if(['clasica zucca','clásica zucca','cheese zucca','doble cheese','doble zucca','triple zucca','big zucca'].map(norm).includes(n))return 'Línea Salsa Cheddar';
+    if(['cheddar one','cheddar double','cheddar triple'].map(norm).includes(n))return 'Línea Cheddar Fundido';
+   }
+   if(c==='papas fritas'||c==='papas'){
+    if(/^papas fritas \(?(chica|mediana|grande)\)?$/.test(n))return 'Clásicas';
+    if(/^papas cheddar \(?(chica|mediana|grande)\)?$/.test(n))return 'Cheddar';
+   }
+   return '';
+  };
+  const records=table.slice(1).map((r,index)=>({
+   cat:(r[ix.cat]||'').trim(),name:(r[ix.name]||'').trim(),desc:ix.desc>=0?(r[ix.desc]||'').trim():'',price:parsePrice(r[ix.price]),available:ix.avail>=0?yes(r[ix.avail]):true,photo:((ix.photo>=0?(r[ix.photo]||'').trim():'')||PRODUCT_PHOTOS[norm((r[ix.name]||'').trim())]||''),sub:(ix.sub>=0?(r[ix.sub]||'').trim():'')||inferSubcategory((r[ix.cat]||'').trim(),(r[ix.name]||'').trim()),featured:ix.featured>=0?yes(r[ix.featured],false):false,order:ix.order>=0?parsePrice(r[ix.order]):null,sourceIndex:index
   })).filter(x=>x.cat&&x.name);
   if(!records.length)throw new Error('No se encontraron productos con categoría y nombre.');
   const groups={};
-  records.forEach(x=>{const key=x.cat; if(!groups[key])groups[key]=[];groups[key].push([x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured])});
+  // El administrador guarda el orden en la columna Orden. Lo respetamos al publicar.
+  records.sort((a,b)=>{if(a.cat!==b.cat)return a.sourceIndex-b.sourceIndex;const ao=Number(a.order)||a.sourceIndex+1,bo=Number(b.order)||b.sourceIndex+1;return ao-bo||a.sourceIndex-b.sourceIndex;});
+  records.forEach(x=>{const key=x.cat; if(!groups[key])groups[key]=[];groups[key].push([x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured,x.order])});
   const next=[];
-  const featured=records.filter(x=>x.featured).map(x=>[x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured]);
+  const featured=records.filter(x=>x.featured).map(x=>[x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured,x.order]);
   if(featured.length)next.push({id:'top',title:'Top más pedidos de Zucca',sub:'Los favoritos de nuestros clientes.',items:featured});
   const ordered=Object.keys(groups).sort((a,b)=>{
    const aa=categoryOrder.indexOf(a),bb=categoryOrder.indexOf(b);
