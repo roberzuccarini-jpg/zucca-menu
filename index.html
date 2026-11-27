@@ -16,7 +16,92 @@
 .add-toast-text{min-width:0;line-height:1.35;overflow-wrap:anywhere}
 .add-toast button{flex:none;border:0;border-radius:8px;background:var(--yellow);color:#111;font-size:11px;font-weight:900;padding:9px 11px;white-space:nowrap}
 @media(max-width:420px){.add-toast{bottom:12px;gap:8px;padding:9px 10px;font-size:12px}.add-toast button{padding:8px 9px;font-size:10px}}
-@media(max-width:600px){.card{background:rgba(18,18,18,.96)}.hero-art{background:rgba(15,15,15,.94)}.search,.field{background:rgba(22,22,22,.97)}.section{scroll-margin-top:72px}}@media(max-width:600px){body{background-size:100% 100svh;background-position:center top;background-attachment:fixed;background-repeat:no-repeat}}</style></head>
+@media(max-width:600px){.card{background:rgba(18,18,18,.96)}.hero-art{background:rgba(15,15,15,.94)}.search,.field{background:rgba(22,22,22,.97)}.section{scroll-margin-top:72px}}@media(max-width:600px){body{background-size:100% 100svh;background-position:center top;background-attachment:fixed;background-repeat:no-repeat}}</style>
+<style id="zucca-category-highlights">
+/* Categorías más visibles: etiqueta amarilla tipo pincelada, sin alterar el catálogo */
+.section{
+  padding:26px 0 38px;
+  scroll-margin-top:95px;
+  border-top:1px solid rgba(245,212,0,.18);
+}
+.section h2{
+  position:relative;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  max-width:100%;
+  min-height:42px;
+  padding:9px 19px 10px 16px;
+  margin:5px 0 22px 3px;
+  color:#090909;
+  font-size:clamp(21px,2.3vw,28px);
+  line-height:1.08;
+  font-weight:1000;
+  letter-spacing:-.65px;
+  text-wrap:balance;
+}
+.section h2::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:2px -9px 1px -7px;
+  background:linear-gradient(100deg,#ffe21a 0%,#f5d400 78%,#dcb900 100%);
+  clip-path:polygon(2% 5%,96% 0,100% 15%,97% 83%,91% 100%,8% 96%,0 82%,3% 55%,0 30%);
+  box-shadow:0 5px 17px rgba(245,212,0,.17);
+}
+.section h2::after{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  left:10px;
+  right:22%;
+  bottom:-7px;
+  height:3px;
+  border-radius:4px;
+  background:linear-gradient(90deg,rgba(245,212,0,.95),rgba(245,212,0,0));
+  transform:skewX(-24deg);
+}
+.section .sub{
+  color:#d2d2d2;
+  font-size:13px;
+  line-height:1.45;
+  margin-top:-10px;
+  margin-bottom:19px;
+}
+/* Los accesos rápidos también se distinguen mejor como navegación de categorías */
+.chips a{
+  border-color:rgba(245,212,0,.48);
+  background:linear-gradient(180deg,rgba(245,212,0,.095),rgba(245,212,0,.025));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+  transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease;
+}
+.chips a:hover,.chips a:focus-visible{
+  border-color:#f5d400;
+  background:#f5d400;
+  color:#090909;
+  transform:translateY(-1px);
+  outline:none;
+}
+@media(max-width:600px){
+  .section{padding:22px 0 30px;scroll-margin-top:76px}
+  .section h2{
+    min-height:37px;
+    margin:4px 0 19px 2px;
+    padding:8px 15px 9px 13px;
+    font-size:clamp(18px,5vw,23px);
+    letter-spacing:-.45px;
+    line-height:1.08;
+  }
+  .section h2::before{inset:1px -6px 1px -5px}
+  .section h2::after{bottom:-6px;height:2px;left:7px}
+  .section .sub{margin-top:-7px;margin-bottom:15px;font-size:12px}
+  .chips{gap:8px;padding-top:14px;padding-bottom:22px}
+  .chips a{padding:9px 13px;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.chips a{transition:none}}
+</style>
+
+</head>
 <body>
 <header class="top"><div class="wrap nav"><a class="brand" href="#inicio">ZUCCA<small>CASA DE COMIDAS</small></a><nav class="navlinks"><a href="#hamburguesas">HAMBURGUESAS</a><a href="#pizzanesas">PIZZANESAS</a><a href="#sandwiches">SÁNDWICHES</a><a href="#pizzas">PIZZAS</a><a href="#papas">PAPAS</a><a href="#bebidas">BEBIDAS</a></nav><button class="cartbtn" id="openCart">MI PEDIDO <span id="cartCount">0</span></button></div></header>
 <main class="wrap" id="inicio">
@@ -126,18 +211,14 @@ async function loadPublishedMenu(){
   const table=parseCSV(raw);if(table.length<2)throw new Error('La hoja no contiene filas de productos.');
   const heads=table[0].map(norm);
   const col=(...names)=>heads.findIndex(h=>names.some(n=>h===norm(n)));
-  const ix={cat:col('Categoria','Categoría'),name:col('Producto'),desc:col('Descripcion','Descripción'),price:col('Precio'),avail:col('Disponible'),photo:col('Foto','Imagen'),sub:col('Subcategoria','Subcategoría'),featured:col('Destacado'),order:col('Orden','Order','Posicion','Posición')};
+  const ix={cat:col('Categoria','Categoría'),name:col('Producto'),desc:col('Descripcion','Descripción'),price:col('Precio'),avail:col('Disponible'),photo:col('Foto','Imagen'),sub:col('Subcategoria','Subcategoría'),featured:col('Destacado')};
   if(ix.cat<0||ix.name<0||ix.price<0)throw new Error('Faltan columnas requeridas: Categoría, Producto o Precio.');
-  const records=table.slice(1).map((r,seq)=>({
-   cat:(r[ix.cat]||'').trim(),name:(r[ix.name]||'').trim(),desc:ix.desc>=0?(r[ix.desc]||'').trim():'',price:parsePrice(r[ix.price]),available:ix.avail>=0?yes(r[ix.avail]):true,photo:((ix.photo>=0?(r[ix.photo]||'').trim():'')||PRODUCT_PHOTOS[norm((r[ix.name]||'').trim())]||''),sub:ix.sub>=0?(r[ix.sub]||'').trim():'',featured:ix.featured>=0?yes(r[ix.featured],false):false,order:ix.order>=0&&String(r[ix.order]||'').trim()!==''?Number(r[ix.order]):NaN,seq
+  const records=table.slice(1).map(r=>({
+   cat:(r[ix.cat]||'').trim(),name:(r[ix.name]||'').trim(),desc:ix.desc>=0?(r[ix.desc]||'').trim():'',price:parsePrice(r[ix.price]),available:ix.avail>=0?yes(r[ix.avail]):true,photo:((ix.photo>=0?(r[ix.photo]||'').trim():'')||PRODUCT_PHOTOS[norm((r[ix.name]||'').trim())]||''),sub:ix.sub>=0?(r[ix.sub]||'').trim():'',featured:ix.featured>=0?yes(r[ix.featured],false):false
   })).filter(x=>x.cat&&x.name);
   if(!records.length)throw new Error('No se encontraron productos con categoría y nombre.');
   const groups={};
-  records.forEach(x=>{const key=x.cat; if(!groups[key])groups[key]=[];groups[key].push([x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured,x.order,x.seq])});
-  Object.keys(groups).forEach(cat=>groups[cat].sort((a,b)=>{
-   const ao=Number.isFinite(a[7])?a[7]:a[8],bo=Number.isFinite(b[7])?b[7]:b[8];
-   return ao-bo || a[8]-b[8];
-  }));
+  records.forEach(x=>{const key=x.cat; if(!groups[key])groups[key]=[];groups[key].push([x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured])});
   const next=[];
   const featured=records.filter(x=>x.featured).map(x=>[x.name,x.price,x.desc,x.photo,x.available,x.sub,x.featured]);
   if(featured.length)next.push({id:'top',title:'Top más pedidos de Zucca',sub:'Los favoritos de nuestros clientes.',items:featured});
