@@ -11,6 +11,16 @@
 @media(max-width:600px){.wrap{padding:0 15px}.nav{height:65px}.brand{font-size:27px}.hero{padding:38px 0 20px;gap:18px}.hero h1{letter-spacing:-3px}.hero-art{min-height:165px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.info{padding:10px}.info h3{font-size:15px}.desc{font-size:12px;min-height:48px}.price{font-size:17px}.section h2{font-size:23px}.cartbtn{padding:10px 12px}}
 
 .combo-modal{position:fixed;inset:0;z-index:45;background:#000c;display:none;align-items:center;justify-content:center;padding:16px}.combo-modal.open{display:flex}.combo-dialog{width:min(480px,100%);max-height:92vh;overflow:auto;background:#111;border:1px solid #514600;border-radius:16px;padding:20px;box-shadow:0 20px 70px #000}.combo-dialog h2{margin:0;color:var(--yellow);font-size:22px}.combo-dialog p{color:#bbb;font-size:13px;line-height:1.5}.combo-field{display:block;margin:15px 0}.combo-field label{display:block;font-size:13px;font-weight:800;margin-bottom:6px}.combo-error{color:#ffc35a;font-size:12px;min-height:18px;margin:8px 0}.combo-actions{display:flex;gap:9px;margin-top:16px}.combo-actions button{flex:1}.cartmodifier{color:#e6d35d;font-size:12px;line-height:1.5;margin:5px 0}.combo-hint{background:#201c08;border:1px solid #534600;border-radius:8px;padding:10px;color:#d8ca75;font-size:12px}
+.pizza-choice-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}
+.pizza-choice-option{display:flex;align-items:flex-start;gap:8px;padding:12px;border:1px solid #514600;border-radius:10px;background:#191919;cursor:pointer}
+.pizza-choice-option:has(input:checked){border-color:var(--yellow);background:#292300;box-shadow:0 0 0 1px var(--yellow) inset}
+.pizza-choice-option input{accent-color:var(--yellow);margin-top:3px}
+.pizza-choice-option b{display:block;color:#fff;font-size:13px}
+.pizza-choice-option small{display:block;color:#bbb;font-size:11px;margin-top:4px}
+.pizza-half-panel{display:none;margin-top:12px;padding:12px;border:1px solid #514600;border-radius:10px;background:#171717}
+.pizza-half-panel.visible{display:block}
+.pizza-half-price{font-size:18px;font-weight:900;color:var(--yellow);margin-top:10px}
+@media(max-width:420px){.pizza-choice-options{grid-template-columns:1fr}}
 .add-toast{position:fixed;left:50%;bottom:18px;z-index:70;display:flex;align-items:center;gap:12px;width:max-content;max-width:calc(100% - 24px);padding:11px 12px 11px 15px;background:#171717;border:1px solid #6b5c00;border-radius:12px;box-shadow:0 12px 40px #000b;color:#f7f7f7;opacity:0;pointer-events:none;transform:translate(-50%,18px);transition:opacity .2s ease,transform .2s ease;font-size:13px}
 .add-toast.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
 .add-toast-text{min-width:0;line-height:1.35;overflow-wrap:anywhere}
@@ -149,6 +159,24 @@
   <div class="combo-actions"><button class="secondary" id="cancelCombo" type="button">CANCELAR</button><button class="primary" id="confirmCombo" type="button">AGREGAR AL PEDIDO</button></div>
  </div>
 </div>
+<div class="combo-modal" id="pizzaChoiceModal" role="dialog" aria-modal="true" aria-labelledby="pizzaChoiceTitle">
+ <div class="combo-dialog">
+  <div class="drawerhead"><h2 id="pizzaChoiceTitle">¿Cómo querés tu pizza?</h2><button class="close" id="closePizzaChoice" type="button">Cerrar ✕</button></div>
+  <p id="pizzaChoiceProduct"></p>
+  <div class="pizza-choice-options">
+   <label class="pizza-choice-option"><input type="radio" name="pizzaFormat" value="entera" checked><span><b>Entera</b><small id="pizzaWholePrice"></small></span></label>
+   <label class="pizza-choice-option"><input type="radio" name="pizzaFormat" value="mitad"><span><b>Mitad y mitad</b><small>Elegí una segunda variedad</small></span></label>
+  </div>
+  <div class="pizza-half-panel" id="pizzaHalfPanel">
+   <div class="combo-field"><label>Primera mitad</label><div class="combo-hint" id="pizzaFirstHalf"></div></div>
+   <div class="combo-field"><label for="pizzaSecondHalf">Segunda mitad</label><select class="field" id="pizzaSecondHalf"><option value="">Elegí otra variedad</option></select></div>
+   <div class="pizza-half-price" id="pizzaHalfPrice">Total: —</div>
+   <div class="combo-hint">Cada mitad se calcula como la mitad del precio de esa variedad + $1.000.</div>
+  </div>
+  <div class="combo-error" id="pizzaChoiceError" aria-live="polite"></div>
+  <div class="combo-actions"><button class="secondary" id="cancelPizzaChoice" type="button">CANCELAR</button><button class="primary" id="confirmPizzaChoice" type="button">AGREGAR AL PEDIDO</button></div>
+ </div>
+</div>
 <div id="addToast" class="add-toast" role="status" aria-live="polite">
   <span id="addToastText" class="add-toast-text">Producto agregado al pedido</span>
   <button id="addToastView" type="button">VER PEDIDO</button>
@@ -176,7 +204,7 @@ function renderProductCard(s,p,showSubLabel=false){
  let available=p[4]!==false;
  card.innerHTML=`<div class="photo">${photo}</div><div class="info">${showSubLabel&&p[5]?`<div style="color:#c9b400;font-size:10px;font-weight:800;margin-bottom:5px">${esc(p[5])}</div>`:''}<h3>${esc(p[0])}</h3><p class="desc">${esc(p[2]||'')}</p><div class="price">${p[1]===null?'Consultar precio':money(p[1])}</div><button class="add" ${(p[1]===null||!available)?'disabled':''}>${!available?'AGOTADO':p[1]===null?'PRECIO A CONFIRMAR':'AGREGAR +'}</button></div>`;
  if(!available)card.querySelector('.add').style.opacity='.5';
- if(p[1]!==null && available)card.querySelector('button').addEventListener('click',()=>add(p));
+ if(p[1]!==null && available)card.querySelector('button').addEventListener('click',()=>{if(isPizzaProduct(p))openPizzaChoice(p);else add(p)});
  return card;
 }
 function renderSections(filter=''){
@@ -350,6 +378,78 @@ function openComboSelector(p){
  document.getElementById('comboModal').classList.add('open');
 }
 function closeComboSelector(){document.getElementById('comboModal').classList.remove('open');pendingComboProduct=null}
+
+// Pizzas: elección de entera o mitad y mitad. No crea medias pizzas en el catálogo.
+let pendingPizzaProduct=null;
+function getPizzaSection(){return sections.find(s=>s.id==='pizzas')}
+function isPizzaProduct(p){
+ const pizzaSection=getPizzaSection();
+ return !!pizzaSection && pizzaSection.items.some(x=>norm(x[0])===norm(p?.[0]||''));
+}
+function getAvailablePizzaVarieties(){
+ const pizzaSection=getPizzaSection();
+ if(!pizzaSection)return [];
+ return pizzaSection.items.filter(x=>x[0] && x[1]!==null && x[1]!==undefined && Number(x[1])>0 && x[4]!==false && !/^media\s+pizza/i.test(norm(x[0])));
+}
+function pizzaHalfPrice(price){return Math.round(Number(price)/2)+1000}
+function updatePizzaHalfPrice(){
+ const secondName=document.getElementById('pizzaSecondHalf').value;
+ const first=pendingPizzaProduct;
+ const second=getAvailablePizzaVarieties().find(x=>x[0]===secondName);
+ const out=document.getElementById('pizzaHalfPrice');
+ if(!first||!second){out.textContent='Total: elegí la segunda variedad';return}
+ const total=pizzaHalfPrice(first[1])+pizzaHalfPrice(second[1]);
+ out.textContent='Total: '+money(total);
+}
+function openPizzaChoice(p){
+ pendingPizzaProduct=p;
+ document.getElementById('pizzaChoiceProduct').textContent=p[0]+' · '+money(p[1]);
+ document.getElementById('pizzaWholePrice').textContent=money(p[1]);
+ document.getElementById('pizzaFirstHalf').textContent=p[0];
+ const select=document.getElementById('pizzaSecondHalf');
+ const varieties=getAvailablePizzaVarieties().filter(x=>norm(x[0])!==norm(p[0]));
+ select.innerHTML='<option value="">Elegí otra variedad</option>'+varieties.map(x=>'<option value="'+esc(x[0])+'">'+esc(x[0])+' · '+money(x[1])+'</option>').join('');
+ document.querySelector('input[name="pizzaFormat"][value="entera"]').checked=true;
+ document.getElementById('pizzaHalfPanel').classList.remove('visible');
+ document.getElementById('pizzaChoiceError').textContent=varieties.length?'':'No hay otra variedad de pizza disponible para combinar.';
+ document.getElementById('confirmPizzaChoice').disabled=false;
+ updatePizzaHalfPrice();
+ document.getElementById('pizzaChoiceModal').classList.add('open');
+}
+function closePizzaChoice(){document.getElementById('pizzaChoiceModal').classList.remove('open');pendingPizzaProduct=null}
+document.querySelectorAll('input[name="pizzaFormat"]').forEach(r=>r.addEventListener('change',()=>{
+ const half=document.querySelector('input[name="pizzaFormat"]:checked')?.value==='mitad';
+ document.getElementById('pizzaHalfPanel').classList.toggle('visible',half);
+ document.getElementById('pizzaChoiceError').textContent='';
+}));
+document.getElementById('pizzaSecondHalf').addEventListener('change',updatePizzaHalfPrice);
+document.getElementById('closePizzaChoice').addEventListener('click',closePizzaChoice);
+document.getElementById('cancelPizzaChoice').addEventListener('click',closePizzaChoice);
+document.getElementById('pizzaChoiceModal').addEventListener('click',e=>{if(e.target.id==='pizzaChoiceModal')closePizzaChoice()});
+document.getElementById('confirmPizzaChoice').addEventListener('click',()=>{
+ if(!pendingPizzaProduct)return;
+ const format=document.querySelector('input[name="pizzaFormat"]:checked')?.value||'entera';
+ const first=pendingPizzaProduct;
+ if(format==='entera'){
+  closePizzaChoice();
+  add(first);
+  return;
+ }
+ const secondName=document.getElementById('pizzaSecondHalf').value;
+ const second=getAvailablePizzaVarieties().find(x=>x[0]===secondName);
+ const error=document.getElementById('pizzaChoiceError');
+ if(!second){error.textContent='Elegí la segunda variedad para completar la pizza.';return}
+ if(norm(first[0])===norm(second[0])){error.textContent='Elegí dos variedades diferentes.';return}
+ const total=pizzaHalfPrice(first[1])+pizzaHalfPrice(second[1]);
+ const varieties=[first[0],second[0]];
+ const key='pizza-half||'+varieties.map(norm).sort().join('||');
+ const existing=cart.find(x=>x.name==='Pizza mitad y mitad'&&x.modifierKey===key);
+ if(existing)existing.qty++;
+ else cart.push({name:'Pizza mitad y mitad',price:total,qty:1,modifiers:varieties,modifierKey:key});
+ closePizzaChoice();
+ renderCart();
+ showAddedToast('Pizza mitad y mitad · '+varieties[0]+' + '+varieties[1]);
+});
 let addToastTimer=null;
 function showAddedToast(label){
  const toast=document.getElementById('addToast');
