@@ -11,7 +11,7 @@
 @media(max-width:600px){.wrap{padding:0 15px}.nav{height:65px}.brand{font-size:27px}.hero{padding:38px 0 20px;gap:18px}.hero h1{letter-spacing:-3px}.hero-art{min-height:165px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.info{padding:10px}.info h3{font-size:15px}.desc{font-size:12px;min-height:48px}.price{font-size:17px}.section h2{font-size:23px}.cartbtn{padding:10px 12px}}
 
 .combo-modal{position:fixed;inset:0;z-index:45;background:#000c;display:none;align-items:center;justify-content:center;padding:16px}.combo-modal.open{display:flex}.combo-dialog{width:min(480px,100%);max-height:92vh;overflow:auto;background:#111;border:1px solid #514600;border-radius:16px;padding:20px;box-shadow:0 20px 70px #000}.combo-dialog h2{margin:0;color:var(--yellow);font-size:22px}.combo-dialog p{color:#bbb;font-size:13px;line-height:1.5}.combo-field{display:block;margin:15px 0}.combo-field label{display:block;font-size:13px;font-weight:800;margin-bottom:6px}.combo-error{color:#ffc35a;font-size:12px;min-height:18px;margin:8px 0}.combo-actions{display:flex;gap:9px;margin-top:16px}.combo-actions button{flex:1}.cartmodifier{color:#e6d35d;font-size:12px;line-height:1.5;margin:5px 0}.combo-hint{background:#201c08;border:1px solid #534600;border-radius:8px;padding:10px;color:#d8ca75;font-size:12px}
-.pizza-choice-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}
+.pizza-choice-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}
 .pizza-choice-option{display:flex;align-items:flex-start;gap:8px;padding:12px;border:1px solid #514600;border-radius:10px;background:#191919;cursor:pointer}
 .pizza-choice-option:has(input:checked){border-color:var(--yellow);background:#292300;box-shadow:0 0 0 1px var(--yellow) inset}
 .pizza-choice-option input{accent-color:var(--yellow);margin-top:3px}
@@ -165,13 +165,14 @@
   <p id="pizzaChoiceProduct"></p>
   <div class="pizza-choice-options">
    <label class="pizza-choice-option"><input type="radio" name="pizzaFormat" value="entera" checked><span><b>Entera</b><small id="pizzaWholePrice"></small></span></label>
-   <label class="pizza-choice-option"><input type="radio" name="pizzaFormat" value="mitad"><span><b>Mitad y mitad</b><small>Elegí una segunda variedad</small></span></label>
+   <label class="pizza-choice-option"><input type="radio" name="pizzaFormat" value="media"><span><b>Media sola</b><small>Una variedad</small></span></label>
+   <label class="pizza-choice-option"><input type="radio" name="pizzaFormat" value="mitad"><span><b>Mitad y mitad</b><small>Dos variedades</small></span></label>
   </div>
   <div class="pizza-half-panel" id="pizzaHalfPanel">
-   <div class="combo-field"><label>Primera mitad</label><div class="combo-hint" id="pizzaFirstHalf"></div></div>
-   <div class="combo-field"><label for="pizzaSecondHalf">Segunda mitad</label><select class="field" id="pizzaSecondHalf"><option value="">Elegí otra variedad</option></select></div>
+   <div class="combo-field"><label>Variedad</label><div class="combo-hint" id="pizzaFirstHalf"></div></div>
+   <div class="combo-field" id="pizzaSecondHalfWrap"><label for="pizzaSecondHalf">Segunda mitad</label><select class="field" id="pizzaSecondHalf"><option value="">Elegí otra variedad</option></select></div>
    <div class="pizza-half-price" id="pizzaHalfPrice">Total: —</div>
-   <div class="combo-hint">Cada mitad se calcula como la mitad del precio de esa variedad + $1.000.</div>
+   <div class="combo-hint" id="pizzaHalfPriceHint">Media sola: mitad del precio de la variedad + $1.000. Mitad y mitad: se calcula cada mitad por separado + $1.000 por variedad.</div>
   </div>
   <div class="combo-error" id="pizzaChoiceError" aria-live="polite"></div>
   <div class="combo-actions"><button class="secondary" id="cancelPizzaChoice" type="button">CANCELAR</button><button class="primary" id="confirmPizzaChoice" type="button">AGREGAR AL PEDIDO</button></div>
@@ -379,7 +380,7 @@ function openComboSelector(p){
 }
 function closeComboSelector(){document.getElementById('comboModal').classList.remove('open');pendingComboProduct=null}
 
-// Pizzas: elección de entera o mitad y mitad. No crea medias pizzas en el catálogo.
+// Pizzas: elección de entera, media sola o mitad y mitad.
 let pendingPizzaProduct=null;
 function getPizzaSection(){return sections.find(s=>s.id==='pizzas')}
 function isPizzaProduct(p){
@@ -392,14 +393,24 @@ function getAvailablePizzaVarieties(){
  return pizzaSection.items.filter(x=>x[0] && x[1]!==null && x[1]!==undefined && Number(x[1])>0 && x[4]!==false && !/^media\s+pizza/i.test(norm(x[0])));
 }
 function pizzaHalfPrice(price){return Math.round(Number(price)/2)+1000}
+function selectedPizzaFormat(){return document.querySelector('input[name="pizzaFormat"]:checked')?.value||'entera'}
 function updatePizzaHalfPrice(){
- const secondName=document.getElementById('pizzaSecondHalf').value;
+ const format=selectedPizzaFormat();
  const first=pendingPizzaProduct;
+ const secondWrap=document.getElementById('pizzaSecondHalfWrap');
+ const secondName=document.getElementById('pizzaSecondHalf').value;
  const second=getAvailablePizzaVarieties().find(x=>x[0]===secondName);
  const out=document.getElementById('pizzaHalfPrice');
- if(!first||!second){out.textContent='Total: elegí la segunda variedad';return}
- const total=pizzaHalfPrice(first[1])+pizzaHalfPrice(second[1]);
- out.textContent='Total: '+money(total);
+ secondWrap.style.display=format==='mitad'?'block':'none';
+ if(format==='media'){
+  out.textContent=first?'Total: '+money(pizzaHalfPrice(first[1])):'Total: —';
+  return;
+ }
+ if(format==='mitad'){
+  if(!first||!second){out.textContent='Total: elegí la segunda variedad';return}
+  const total=pizzaHalfPrice(first[1])+pizzaHalfPrice(second[1]);
+  out.textContent='Total: '+money(total);
+ }
 }
 function openPizzaChoice(p){
  pendingPizzaProduct=p;
@@ -409,18 +420,21 @@ function openPizzaChoice(p){
  const select=document.getElementById('pizzaSecondHalf');
  const varieties=getAvailablePizzaVarieties().filter(x=>norm(x[0])!==norm(p[0]));
  select.innerHTML='<option value="">Elegí otra variedad</option>'+varieties.map(x=>'<option value="'+esc(x[0])+'">'+esc(x[0])+' · '+money(x[1])+'</option>').join('');
+ select.value='';
  document.querySelector('input[name="pizzaFormat"][value="entera"]').checked=true;
  document.getElementById('pizzaHalfPanel').classList.remove('visible');
- document.getElementById('pizzaChoiceError').textContent=varieties.length?'':'No hay otra variedad de pizza disponible para combinar.';
+ document.getElementById('pizzaSecondHalfWrap').style.display='none';
+ document.getElementById('pizzaChoiceError').textContent='';
  document.getElementById('confirmPizzaChoice').disabled=false;
  updatePizzaHalfPrice();
  document.getElementById('pizzaChoiceModal').classList.add('open');
 }
 function closePizzaChoice(){document.getElementById('pizzaChoiceModal').classList.remove('open');pendingPizzaProduct=null}
 document.querySelectorAll('input[name="pizzaFormat"]').forEach(r=>r.addEventListener('change',()=>{
- const half=document.querySelector('input[name="pizzaFormat"]:checked')?.value==='mitad';
- document.getElementById('pizzaHalfPanel').classList.toggle('visible',half);
+ const format=selectedPizzaFormat();
+ document.getElementById('pizzaHalfPanel').classList.toggle('visible',format!=='entera');
  document.getElementById('pizzaChoiceError').textContent='';
+ updatePizzaHalfPrice();
 }));
 document.getElementById('pizzaSecondHalf').addEventListener('change',updatePizzaHalfPrice);
 document.getElementById('closePizzaChoice').addEventListener('click',closePizzaChoice);
@@ -428,16 +442,27 @@ document.getElementById('cancelPizzaChoice').addEventListener('click',closePizza
 document.getElementById('pizzaChoiceModal').addEventListener('click',e=>{if(e.target.id==='pizzaChoiceModal')closePizzaChoice()});
 document.getElementById('confirmPizzaChoice').addEventListener('click',()=>{
  if(!pendingPizzaProduct)return;
- const format=document.querySelector('input[name="pizzaFormat"]:checked')?.value||'entera';
+ const format=selectedPizzaFormat();
  const first=pendingPizzaProduct;
  if(format==='entera'){
   closePizzaChoice();
   add(first);
   return;
  }
+ const error=document.getElementById('pizzaChoiceError');
+ if(format==='media'){
+  const total=pizzaHalfPrice(first[1]);
+  const key='pizza-media||'+norm(first[0]);
+  const existing=cart.find(x=>x.name==='Media pizza'&&x.modifierKey===key);
+  if(existing)existing.qty++;
+  else cart.push({name:'Media pizza',price:total,qty:1,modifiers:[first[0]],modifierKey:key});
+  closePizzaChoice();
+  renderCart();
+  showAddedToast('Media pizza · '+first[0]);
+  return;
+ }
  const secondName=document.getElementById('pizzaSecondHalf').value;
  const second=getAvailablePizzaVarieties().find(x=>x[0]===secondName);
- const error=document.getElementById('pizzaChoiceError');
  if(!second){error.textContent='Elegí la segunda variedad para completar la pizza.';return}
  if(norm(first[0])===norm(second[0])){error.textContent='Elegí dos variedades diferentes.';return}
  const total=pizzaHalfPrice(first[1])+pizzaHalfPrice(second[1]);
@@ -490,11 +515,11 @@ function paymentMode(){return document.querySelector('input[name="paymentMode"]:
 function updatePaymentUI(){const cash=paymentMode()==='efectivo';document.getElementById('cashPaymentWrap').style.display=cash?'block':'none';document.getElementById('transferPaymentInfo').style.display=cash?'none':'block';updateCashChange()}
 function updateCashChange(){const info=document.getElementById('cashChangeInfo');if(!info)return;const raw=document.getElementById('cashAmount').value;const amount=Number(raw);const subtotal=cart.reduce((a,x)=>a+x.price*x.qty,0);const fee=deliveryMode()==='envio'?DELIVERY_FEE:0;const total=subtotal+fee;if(!raw){info.textContent='Ingresá el importe con el que vas a pagar para calcular el cambio.';return}if(!Number.isFinite(amount)||amount<=0){info.textContent='Ingresá un importe válido.';return}if(amount<total){info.textContent='Te faltan '+money(total-amount)+' para cubrir el total.';return}info.textContent='Tu vuelto será: '+money(amount-total);}
 function updateDeliveryUI(){const isDelivery=deliveryMode()==='envio';document.getElementById('deliveryAddressWrap').style.display=isDelivery?'block':'none';document.getElementById('pickupInfo').style.display=isDelivery?'none':'block';document.getElementById('deliveryFeeRow').style.display=isDelivery?'flex':'none';renderCart()}
-function renderCart(){document.getElementById('cartCount').textContent=cart.reduce((a,x)=>a+x.qty,0);let el=document.getElementById('cartItems');let checkout=document.getElementById('checkout');if(!cart.length){el.innerHTML='<div class="empty">Todavía no agregaste productos.</div>';checkout.style.display='none';return}checkout.style.display='block';el.innerHTML='';cart.forEach((x,i)=>{let row=document.createElement('div');row.className='cartline';row.innerHTML=`<div><b>${esc(x.name)}</b>${x.modifiers?.length?`<div class="cartmodifier">½ ${esc(x.modifiers[0])}<br>½ ${esc(x.modifiers[1])}</div>`:''}<div style="color:#aaa;font-size:12px">${money(x.price)} c/u</div></div><div class="qty"><button data-d="-">−</button><b>${x.qty}</b><button data-d="+">+</button></div>`;row.querySelectorAll('button').forEach(b=>b.onclick=()=>{x.qty+=b.dataset.d==='+'?1:-1;if(x.qty<=0)cart.splice(i,1);renderCart()});el.appendChild(row)});let subtotal=cart.reduce((a,x)=>a+x.price*x.qty,0);let fee=deliveryMode()==='envio'?DELIVERY_FEE:0;document.getElementById('cartSubtotal').textContent=money(subtotal);document.getElementById('deliveryFee').textContent=money(DELIVERY_FEE);document.getElementById('cartTotal').textContent=money(subtotal+fee);updateCashChange()}
+function renderCart(){document.getElementById('cartCount').textContent=cart.reduce((a,x)=>a+x.qty,0);let el=document.getElementById('cartItems');let checkout=document.getElementById('checkout');if(!cart.length){el.innerHTML='<div class="empty">Todavía no agregaste productos.</div>';checkout.style.display='none';return}checkout.style.display='block';el.innerHTML='';cart.forEach((x,i)=>{let row=document.createElement('div');row.className='cartline';row.innerHTML=`<div><b>${esc(x.name)}</b>${x.modifiers?.length?`<div class="cartmodifier">${x.modifiers.length===1?'½ '+esc(x.modifiers[0]):'½ '+esc(x.modifiers[0])+'<br>½ '+esc(x.modifiers[1])}</div>`:''}<div style="color:#aaa;font-size:12px">${money(x.price)} c/u</div></div><div class="qty"><button data-d="-">−</button><b>${x.qty}</b><button data-d="+">+</button></div>`;row.querySelectorAll('button').forEach(b=>b.onclick=()=>{x.qty+=b.dataset.d==='+'?1:-1;if(x.qty<=0)cart.splice(i,1);renderCart()});el.appendChild(row)});let subtotal=cart.reduce((a,x)=>a+x.price*x.qty,0);let fee=deliveryMode()==='envio'?DELIVERY_FEE:0;document.getElementById('cartSubtotal').textContent=money(subtotal);document.getElementById('deliveryFee').textContent=money(DELIVERY_FEE);document.getElementById('cartTotal').textContent=money(subtotal+fee);updateCashChange()}
 function openCart(){document.getElementById('cartModal').classList.add('open')}document.getElementById('addToastView').onclick=()=>{document.getElementById('addToast').classList.remove('show');openCart()};document.getElementById('openCart').onclick=openCart;document.getElementById('heroCart').onclick=openCart;document.getElementById('closeCart').onclick=()=>document.getElementById('cartModal').classList.remove('open');document.getElementById('cartModal').onclick=e=>{if(e.target.id==='cartModal')e.currentTarget.classList.remove('open')};document.getElementById('search').addEventListener('input',e=>renderSections(e.target.value));
 document.querySelectorAll('input[name="deliveryMode"]').forEach(r=>r.addEventListener('change',updateDeliveryUI));
 document.querySelectorAll('input[name="paymentMode"]').forEach(r=>r.addEventListener('change',updatePaymentUI));document.getElementById('cashAmount').addEventListener('input',updateCashChange);
-document.getElementById('sendOrder').onclick=()=>{const phone=(localStorage.getItem('zucca_whatsapp')||'5492473457475').replace(/\D/g,'');let name=document.getElementById('customerName').value.trim(),address=document.getElementById('customerAddress').value.trim(),notes=document.getElementById('customerNotes').value.trim(),mode=deliveryMode(),payment=paymentMode();if(!name){alert('Completá tu nombre.');return}if(mode==='envio'&&!address){alert('Completá la dirección de entrega.');return}let subtotal=cart.reduce((a,x)=>a+x.price*x.qty,0),fee=mode==='envio'?DELIVERY_FEE:0,total=subtotal+fee;let paymentText='Forma de pago: Transferencia (solicito los datos para transferir)';if(payment==='efectivo'){const raw=document.getElementById('cashAmount').value;const paid=Number(raw);if(!raw||!Number.isFinite(paid)||paid<=0){alert('Indicá con cuánto vas a pagar en efectivo.');return}if(paid<total){alert('El importe indicado es menor que el total del pedido.');return}paymentText='Forma de pago: Efectivo\nPaga con: '+money(paid)+'\nVuelto: '+money(paid-total)}let msg='Hola Zucca! Quiero hacer este pedido:\n\n'+cart.map(x=>x.qty+' x '+x.name+' — '+money(x.price*x.qty)+(x.modifiers?.length?'\n   Mitad 1: '+x.modifiers[0]+'\n   Mitad 2: '+x.modifiers[1]:'' )).join('\n')+'\n\nSubtotal: '+money(subtotal)+'\n'+(mode==='envio'?'Envío a domicilio: '+money(fee)+'\n':'Retiro en el local: sin costo\n')+'TOTAL: '+money(total)+'\n\nNombre: '+name+'\nModalidad: '+(mode==='envio'?'Envío a domicilio':'Retiro en el local')+(mode==='envio'?'\nDirección: '+address:'')+'\n'+paymentText+(notes?'\nIndicaciones: '+notes:'');window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank')};
+document.getElementById('sendOrder').onclick=()=>{const phone=(localStorage.getItem('zucca_whatsapp')||'5492473457475').replace(/\D/g,'');let name=document.getElementById('customerName').value.trim(),address=document.getElementById('customerAddress').value.trim(),notes=document.getElementById('customerNotes').value.trim(),mode=deliveryMode(),payment=paymentMode();if(!name){alert('Completá tu nombre.');return}if(mode==='envio'&&!address){alert('Completá la dirección de entrega.');return}let subtotal=cart.reduce((a,x)=>a+x.price*x.qty,0),fee=mode==='envio'?DELIVERY_FEE:0,total=subtotal+fee;let paymentText='Forma de pago: Transferencia (solicito los datos para transferir)';if(payment==='efectivo'){const raw=document.getElementById('cashAmount').value;const paid=Number(raw);if(!raw||!Number.isFinite(paid)||paid<=0){alert('Indicá con cuánto vas a pagar en efectivo.');return}if(paid<total){alert('El importe indicado es menor que el total del pedido.');return}paymentText='Forma de pago: Efectivo\nPaga con: '+money(paid)+'\nVuelto: '+money(paid-total)}let msg='Hola Zucca! Quiero hacer este pedido:\n\n'+cart.map(x=>x.qty+' x '+x.name+' — '+money(x.price*x.qty)+(x.modifiers?.length?(x.modifiers.length===1?'\n   Media: '+x.modifiers[0]:'\n   Mitad 1: '+x.modifiers[0]+'\n   Mitad 2: '+x.modifiers[1]):'' )).join('\n')+'\n\nSubtotal: '+money(subtotal)+'\n'+(mode==='envio'?'Envío a domicilio: '+money(fee)+'\n':'Retiro en el local: sin costo\n')+'TOTAL: '+money(total)+'\n\nNombre: '+name+'\nModalidad: '+(mode==='envio'?'Envío a domicilio':'Retiro en el local')+(mode==='envio'?'\nDirección: '+address:'')+'\n'+paymentText+(notes?'\nIndicaciones: '+notes:'');window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank')};
 const ADMIN_URL='https://script.google.com/macros/s/AKfycbzgg8dJ9jpK1a5Wm4O3Xx5TmYKbkVs3fcFDiZWUfDyO41EZVtsyQt1p3aPPl7qdTu1GgA/exec';
 const adminInfo=document.getElementById('adminInfo');
 const brandLogo=document.querySelector('.brand');
